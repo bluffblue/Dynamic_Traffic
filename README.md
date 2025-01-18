@@ -38,6 +38,7 @@ Include in your script:
 ```pawn
 #include <dynamic_traffic>
 ```
+```
 
 ## Usage
 
