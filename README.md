@@ -100,4 +100,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Credits
 
-Created by duo sigma n jomok[janeblue and xenojagocatur] for SA-MP community.
+Created by duo sigma n jomok[ janeblue and xenojagocatur ] for SA-MP community.
