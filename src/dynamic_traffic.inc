@@ -3,7 +3,7 @@
 #endif
 #define _dynamic_traffic_included
 
-#include <a_samp>
+
 #include <YSI_Data\y_foreach>
 #include <streamer>
 #include <YSI_Coding\y_hooks>
