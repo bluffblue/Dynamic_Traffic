@@ -1,0 +1,42 @@
+{
+    "user": "charlieJ",
+    "repo": "dynamic_traffic",
+    "entry": "test.pwn",
+    "output": "test.amx",
+    "dependencies": [
+        "pawn-lang/samp-stdlib",
+        "pawn-lang/YSI-Includes",
+        "samp-incognito/samp-streamer-plugin",
+        "Southclaws/foreach"
+    ],
+    "dev_dependencies": [
+        "pawn-lang/YSI-Includes@5.x"
+    ],
+    "runtime": {
+        "version": "0.3.7",
+        "mode": "server",
+        "rcon_password": "password",
+        "port": 7777,
+        "hostname": "Dynamic Traffic Test Server",
+        "maxplayers": 50,
+        "language": "English"
+    },
+    "resources": [
+        {
+            "name": "dynamic_traffic",
+            "archive": false,
+            "files": {
+                "source": "src/*.inc"
+            }
+        }
+    ],
+    "build": {
+        "includes": [
+            "src"
+        ],
+        "constants": {
+            "MAX_TRAFFIC_VEHICLES": "100",
+            "MAX_TRAFFIC_PATHS": "50"
+        }
+    }
+}
