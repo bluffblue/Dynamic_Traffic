@@ -1,6 +1,6 @@
 {
-    "user": "charlieJ",
-    "repo": "dynamic_traffic",
+    "user": "janeblue",
+    "repo": "Dynamic_Traffic",
     "entry": "test.pwn",
     "output": "test.amx",
     "dependencies": [
@@ -23,7 +23,7 @@
     },
     "resources": [
         {
-            "name": "dynamic_traffic",
+            "name": "Dynamic_Traffic",
             "archive": false,
             "files": {
                 "source": "src/*.inc"
