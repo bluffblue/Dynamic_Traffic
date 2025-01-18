@@ -1,0 +1,44 @@
+# Compiled files
+*.amx
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Dependencies
+dependencies/
+includes/
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Build directories
+build/
+bin/
+obj/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# SA-MP specific
+gamemodes/
+scriptfiles/
+server_log.txt
+server.cfg
+announce.exe
+samp-npc.exe
+samp-server.exe
