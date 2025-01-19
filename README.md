@@ -302,4 +302,4 @@ This project uses the MIT License. See LICENSE file for details.
 
 ## Credits
 
-Created by duo sigma n jomok [janeblue and xenojagocatur] for SA-MP community.
+Created by duo sigma n jomok [bluffblue] for SA-MP community.
