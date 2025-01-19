@@ -3,10 +3,28 @@
 #endif
 #define _dynamic_traffic_included
 
-#include <a_samp>
 #include <YSI_Data\y_foreach>
 #include <streamer>
 #include <YSI_Coding\y_hooks>
+#include <weather_traffic>
+
+forward OnTrafficSystemUpdate();
+forward GetSpeedLimit(pathid);
+forward GetVehiclePath(vehicleid);
+forward InitializeTrafficSystem();
+forward CreateTrafficVehicle(modelid, Float:x, Float:y, Float:z, Float:angle);
+forward DestroyTrafficVehicle(vehicleid);
+forward UpdateVehiclePath(vehicleid);
+forward AdjustTrafficDensity(Float:multiplier);
+forward SetPathSpeedLimit(pathid, Float:speed);
+forward CalculateNextPoint(vehicleid);
+forward ProcessTrafficLights();
+forward HandleVehicleCollision(vehicleid, targetid);
+forward CreateTrafficLight(Float:x, Float:y, Float:z);
+forward DestroyTrafficLight(lightid);
+forward UpdateTrafficLight(lightid);
+forward ShutdownTrafficSystem();
+forward ProcessWeatherUpdate();
 
 #define MAX_TRAFFIC_VEHICLES 100
 #define MAX_TRAFFIC_PATHS 50
@@ -84,22 +102,6 @@ stock bool:IsIntersectionNearby(Float:x, Float:y, Float:z) {
     }
     return false;
 }
-
-forward OnTrafficSystemUpdate();
-forward Float:GetSpeedLimit(pathid);
-forward InitializeTrafficSystem();
-forward CreateTrafficVehicle(modelid, Float:x, Float:y, Float:z, Float:angle);
-forward DestroyTrafficVehicle(vehicleid);
-forward UpdateVehiclePath(vehicleid);
-forward AdjustTrafficDensity(Float:multiplier);
-forward SetPathSpeedLimit(pathid, Float:speed);
-forward CalculateNextPoint(vehicleid);
-forward ProcessTrafficLights();
-forward HandleVehicleCollision(vehicleid, targetid);
-forward CreateTrafficLight(Float:x, Float:y, Float:z);
-forward DestroyTrafficLight(lightid);
-forward UpdateTrafficLight(lightid);
-forward ShutdownTrafficSystem();
 
 stock InitializeTrafficSystem() {
     if(SystemActive) return 0;
@@ -179,9 +181,18 @@ public OnTrafficSystemUpdate() {
     return 1;
 }
 
-stock Float:GetSpeedLimit(pathid) {
-    if(pathid < 0 || pathid >= MAX_TRAFFIC_PATHS) return MIN_SPEED_LIMIT;
-    return g_TrafficPaths[pathid][speedLimit];
+public GetVehiclePath(vehicleid) {
+    foreach(new i : ActiveVehicles) {
+        if(g_TrafficVehicles[i][vehID] == vehicleid) {
+            return g_TrafficVehicles[i][currentPath];
+        }
+    }
+    return -1;
+}
+
+public GetSpeedLimit(pathid) {
+    if(pathid < 0 || pathid >= MAX_TRAFFIC_PATHS) return _:MIN_SPEED_LIMIT;
+    return _:g_TrafficPaths[pathid][speedLimit];
 }
 
 stock SetPathSpeedLimit(pathid, Float:speed) {
@@ -215,18 +226,31 @@ stock AdjustTrafficDensity(Float:multiplier) {
 }
 
 stock UpdateVehiclePath(vehicleid) {
-    new Float:x, Float:y, Float:z, Float:angle;
-    GetVehiclePos(vehicleid, x, y, z);
-    GetVehicleZAngle(vehicleid, angle);
+    if(!SystemActive) return 0;
     
-    new Float:distance = GetVehicleDistanceFromPoint(vehicleid, 
+    new Float:x, Float:y, Float:z;
+    GetVehiclePos(vehicleid, x, y, z);
+    
+    new Float:targetSpeed = GetSpeedLimit(g_TrafficVehicles[vehicleid][currentPath]) * GetWeatherSpeed();
+    new Float:brakeDistance = GetDistanceBetweenPoints(x, y, z,
         g_TrafficVehicles[vehicleid][destinationX],
         g_TrafficVehicles[vehicleid][destinationY],
-        g_TrafficVehicles[vehicleid][destinationZ]);
+        g_TrafficVehicles[vehicleid][destinationZ]) * GetWeatherBraking();
         
-    if(distance < 5.0) {
-        CalculateNextPoint(vehicleid);
+    if(brakeDistance < 10.0) {
+        targetSpeed *= 0.5;
     }
+    
+    new Float:vx, Float:vy, Float:vz;
+    GetVehicleVelocity(g_TrafficVehicles[vehicleid][vehID], vx, vy, vz);
+    
+    new Float:currentSpeed = floatsqroot(vx*vx + vy*vy) * 100.0;
+    if(currentSpeed > targetSpeed) {
+        vx *= 0.95;
+        vy *= 0.95;
+        SetVehicleVelocity(g_TrafficVehicles[vehicleid][vehID], vx, vy, vz);
+    }
+    
     return 1;
 }
 
@@ -312,6 +336,15 @@ stock ProcessTrafficLights() {
     for(new i = 0; i < MAX_TRAFFIC_LIGHTS; i++) {
         if(g_TrafficLights[i][objectID] != INVALID_OBJECT_ID) {
             UpdateTrafficLight(i);
+        }
+    }
+    return 1;
+}
+
+public ProcessWeatherUpdate() {
+    foreach(new i : ActiveVehicles) {
+        if(g_TrafficVehicles[i][vehID] != INVALID_VEHICLE_ID) {
+            ProcessVehicleWeatherBehavior(g_TrafficVehicles[i][vehID]);
         }
     }
     return 1;

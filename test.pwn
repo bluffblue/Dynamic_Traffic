@@ -7,11 +7,14 @@ main() {
 
 public OnGameModeInit() {
     InitializeTrafficSystem();
+    InitializeWeatherSystem();
     AdjustTrafficDensity(1.0);
+    SetWeatherState(WEATHER_CLEAR);
     return 1;
 }
 
 public OnGameModeExit() {
     ShutdownTrafficSystem();
+    ShutdownWeatherSystem();
     return 1;
 }
